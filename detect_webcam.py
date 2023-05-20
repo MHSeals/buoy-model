@@ -41,8 +41,7 @@ while True:
 
             print(f"{name} {int(confidence)}% {bounding_box}")
 
-            frame = cv2.putText(frame, f"{name} {int(confidence*100)}%", (int(bounding_box[0]), int(bounding_box[1])-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
-            frame = cv2.rectangle(frame, (int(bounding_box[0]), int(bounding_box[1])), (int(bounding_box[2]), int(bounding_box[3])), (0, 255, 0), 1)
+    frame = result[0].plot(font_size=0.5, line_width=1, pil=False)
 
     frame = cv2.putText(frame, fps_disp, (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
     

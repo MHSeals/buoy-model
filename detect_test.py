@@ -35,12 +35,8 @@ while True:
             confidence = pred.boxes.conf[i]
             bounding_box = pred.boxes[i].xyxy[0]
 
-            if confidence > 0.5:
-                print(f"{name} {int(confidence*100)}% {bounding_box}")
+    frame = result[0].plot(font_size=0.5, line_width=1, pil=False)
 
-                frame = cv2.putText(frame, f"{name} {int(confidence*100)}%", (int(bounding_box[0]), int(bounding_box[1])-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
-                frame = cv2.rectangle(frame, (int(bounding_box[0]), int(bounding_box[1])), (int(bounding_box[2]), int(bounding_box[3])), (0, 255, 0), 1)
-    
     cv2.rectangle(frame, (0, 0), (130, 30), (255, 255, 255), -1)
     cv2.putText(frame, f"Image {it+1}/{len(images)}", (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
 
