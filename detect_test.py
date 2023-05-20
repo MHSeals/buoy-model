@@ -35,6 +35,8 @@ while True:
             confidence = pred.boxes.conf[i]
             bounding_box = pred.boxes[i].xyxy[0]
 
+            print(f"{name} {int(confidence*100)}% {bounding_box}")
+
     frame = result[0].plot(font_size=0.5, line_width=1, pil=False)
 
     cv2.rectangle(frame, (0, 0), (130, 30), (255, 255, 255), -1)
