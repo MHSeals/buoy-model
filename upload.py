@@ -6,4 +6,4 @@ rf = Roboflow(api_key=roboflow_api_key)
 
 project = rf.workspace("mhseals").project("buoys-4naae")
 
-project.version(5).deploy(model_type="yolov8", model_path=f"runs/detect/v5_300e/")
+project.version(6).deploy(model_type="yolov8", model_path=f"runs/detect/v6/")

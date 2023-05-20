@@ -2,15 +2,29 @@ from ultralytics import YOLO
 import cv2
 import os
 
-model = YOLO("runs/detect/v5_300e/weights/best.pt")
+model = YOLO("runs/detect/v6/weights/best.pt")
 
-images = [cv2.imread(f"test_images/{file}") for file in os.listdir("test_images")]
+dir = "Buoys-6/test/images"
 
-for i in range(len(images)):
-    frame = images[i]
+image_list = os.listdir(dir)
+
+images = [cv2.imread(os.path.join(dir, file)) for file in image_list]
+
+results = {}
+
+# Use while loop with count variable to allow backtracking
+
+it = 0
+
+while True:
+    frame = images[it]
     
     frame = cv2.resize(frame, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
-    result = model(frame, save_conf=True)
+    if results.get(image_list[it]) is None:
+        result = model(frame, save_conf=True)
+        results[image_list[it]] = result
+    else:
+        result = results[image_list[it]]
 
     for pred in result:
         names = pred.names
@@ -21,14 +35,28 @@ for i in range(len(images)):
             confidence = pred.boxes.conf[i]
             bounding_box = pred.boxes[i].xyxy[0]
 
-            print(f"{name} {int(confidence)}% {bounding_box}")
+            if confidence > 0.5:
+                print(f"{name} {int(confidence*100)}% {bounding_box}")
 
-            frame = cv2.putText(frame, f"{name} {int(confidence*100)}%", (int(bounding_box[0]), int(bounding_box[1])-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
-            frame = cv2.rectangle(frame, (int(bounding_box[0]), int(bounding_box[1])), (int(bounding_box[2]), int(bounding_box[3])), (0, 255, 0), 1)
+                frame = cv2.putText(frame, f"{name} {int(confidence*100)}%", (int(bounding_box[0]), int(bounding_box[1])-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
+                frame = cv2.rectangle(frame, (int(bounding_box[0]), int(bounding_box[1])), (int(bounding_box[2]), int(bounding_box[3])), (0, 255, 0), 1)
     
+    cv2.rectangle(frame, (0, 0), (130, 30), (255, 255, 255), -1)
+    cv2.putText(frame, f"Image {it+1}/{len(images)}", (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
+
     cv2.imshow("result", frame)
     c = cv2.waitKey(1)
-    while not c == 9:
+    while not c == 9 and not c == 96:
         c = cv2.waitKey(1)
+        if c == 27:
+            exit(-1)
         if cv2.getWindowProperty("result", cv2.WND_PROP_VISIBLE) < 1:
             exit(-1)
+    
+    if c == 9 and not i >= len(images)-1:
+        it += 1
+
+    if c == 96 and not i < 0:
+        it += -1
+
+    print(it)
