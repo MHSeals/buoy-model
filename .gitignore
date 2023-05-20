@@ -1,0 +1,11 @@
+secret.py
+Buoys-*
+venv
+*.zip
+*.tar
+*.pt
+pictures
+other_images
+runs
+test_images
+.dccache

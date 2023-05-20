@@ -1,0 +1,5 @@
+ultralytics~=8.0.105
+torch~=2.0.1
+numpy~=1.24.3
+opencv-contrib-python~=4.7.0.72
+roboflow~=1.0.9
