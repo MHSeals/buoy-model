@@ -10,3 +10,5 @@ runs
 test_images
 .dccache
 src
+*.pyc
+__pycache__
