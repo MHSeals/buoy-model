@@ -123,11 +123,11 @@ for sequence in tqdm(sequence_list, desc='Writing images and labels', ncols=100,
                         origin = value['origin']
                         dimension = value['dimension']
                         # normalize to 0.0-1.0
-                        bx = origin[0] / x
-                        by = origin[1] / y
-                        bw = dimension[0] / x
-                        bh = dimension[1] / y
-                        bbox = [bx, by, bw, bh]
+                        box_center_x = (origin[0] + dimension[0] / 2) / x
+                        box_center_y = (origin[1] + dimension[1] / 2) / y
+                        box_width = dimension[0] / x
+                        box_height = dimension[1] / y
+                        bbox = [box_center_x, box_center_y, box_width, box_height]
                         for i in bbox:
                             if i < 0.0 or i > 1.0:
                                 raise Exception(f"Error: bbox {bbox} is out of bounds at {bbox.index(i)}\nYour dataset is likely corrupted.")
