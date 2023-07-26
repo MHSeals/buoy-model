@@ -12,3 +12,5 @@ test_images
 src
 *.pyc
 __pycache__
+solo_*
+SYNTHETIC-YOLO
