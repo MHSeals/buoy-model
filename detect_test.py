@@ -2,7 +2,7 @@ from ultralytics import YOLO
 import cv2
 import os
 
-model = YOLO("runs/detect/v6/weights/best.pt")
+model = YOLO("runs/detect/v7/weights/best.pt")
 
 dir = "Buoys-6/test/images"
 
@@ -44,6 +44,7 @@ while True:
 
     cv2.imshow("result", frame)
     c = cv2.waitKey(1)
+    # TAB, BACKTICK (`)
     while not c == 9 and not c == 96:
         c = cv2.waitKey(1)
         if c == 27:
@@ -51,10 +52,15 @@ while True:
         if cv2.getWindowProperty("result", cv2.WND_PROP_VISIBLE) < 1:
             exit(-1)
     
-    if c == 9 and not i >= len(images)-1:
+    if c == 9 and not it >= len(images)-1:
         it += 1
+    elif c == 9 and it >= len(images)-1:
+        it = 0
 
-    if c == 96 and not i < 0:
-        it += -1
+    if c == 96 and not it <= 0:
+        print(3)
+        it -= 1
+    elif c == 96 and it <= 0:
+        it = len(images) - 1
 
     print(it)
