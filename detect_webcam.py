@@ -1,9 +1,8 @@
 from ultralytics import YOLO
 import cv2
 import time
-from enum import Enum
 
-model = YOLO("runs/detect/v7/weights/best.pt")
+model = YOLO("runs/detect/v9/weights/best.pt")
 
 cap = cv2.VideoCapture("/dev/video0") # can change to use different webcams
 

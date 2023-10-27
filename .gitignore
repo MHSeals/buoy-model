@@ -14,3 +14,6 @@ src
 __pycache__
 solo_*
 SYNTHETIC-YOLO
+cameraCalibration
+testRes*.png
+*.pkl

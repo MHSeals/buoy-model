@@ -2,9 +2,9 @@ from ultralytics import YOLO
 import cv2
 import os
 
-model = YOLO("runs/detect/v7/weights/best.pt")
+model = YOLO("runs/detect/v9/weights/best.pt")
 
-dir = "Buoys-6/test/images"
+dir = "Buoys-9/test/images"
 
 image_list = os.listdir(dir)
 
