@@ -68,7 +68,7 @@ pickle.dump((cameraMatrix, dist), open( "calibration.pkl", "wb" ))
 pickle.dump(cameraMatrix, open( "cameraMatrix.pkl", "wb" ))
 pickle.dump(dist, open( "dist.pkl", "wb" ))
 
-TEST_IMAGE_PATH = "cameraCalibration/images/2023-10-27-155728.jpg"
+TEST_IMAGE_PATH = images[0]
 
 ############## UNDISTORTION #####################################################
 

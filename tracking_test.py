@@ -84,7 +84,7 @@ while True:
 
     fps_disp = "FPS: "+str(FPS)[:5]
 
-    results = model.predict(frame)
+    results = model.track(frame, persist=True)
 
     original_frame = cv2.putText(
         original_frame, fps_disp, (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
@@ -118,12 +118,32 @@ while True:
             if area / frame_area > 0.20:
                 continue
 
+            x, y = bounding_box[:2]
+            w, h = bounding_box[2] - x, bounding_box[3] - y
+
+            center_x = x + w / 2
+            center_y = y + h / 2
+
+            id = None
+
             color = colors.get(name, rgb(255, 255, 255))
+
+            if pred.boxes.id is not None:
+                id = int(pred.boxes.id[i])
+
+                track = track_history[id]
+                track.append((float(center_x), float(center_y)))
+                if len(track) > 30:
+                    track.pop(0)
+
+                # Draw the tracking lines
+                points = np.hstack(track).astype(np.int32).reshape((-1, 1, 2))
+                original_frame = cv2.polylines(original_frame, [points], isClosed=False, color=color.as_bgr(), thickness=2)
 
             print(f"{name} {int(confidence*100)}% {bounding_box}")
 
             original_frame = cv2.putText(original_frame, 
-                                         f"{name} ({int(confidence*100)})% {int(area)}px",
+                                         f"{id if id is not None else 'None'}: {name} ({int(confidence*100)})% {int(area)}px",
                                          (int(bounding_box[0]), int(bounding_box[1])-5),
                                          cv2.FONT_HERSHEY_SIMPLEX, 0.4, color.as_bgr(), 1)
             original_frame = cv2.rectangle(original_frame,
@@ -158,4 +178,4 @@ cv2.destroyAllWindows()
 
 print(f"Avg FPS: {total_frames / (time.perf_counter() - prog_start)}")
 
-# AVG FPS: 28.414
+# AVG FPS: 21.545

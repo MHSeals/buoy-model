@@ -17,3 +17,4 @@ SYNTHETIC-YOLO
 cameraCalibration
 testRes*.png
 *.pkl
+*.mp4

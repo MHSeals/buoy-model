@@ -1,8 +1,8 @@
-ultralytics~=8.0.184
-torch~=2.0.1
-numpy~=1.25.1
-opencv-contrib-python~=4.8.0.74
-roboflow~=1.1.2
+ultralytics~=8.1.0
+torch~=2.1.2
+numpy~=1.26.3
+opencv-contrib-python~=4.9.0.80
+roboflow~=1.1.16
 pyyaml~=6.0.1
-tqdm~=4.65.0
-pillow~=10.0.0
+tqdm~=4.66.1
+pillow~=10.2.0
