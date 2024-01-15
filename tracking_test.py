@@ -1,37 +1,13 @@
-from tkinter.font import names
 from ultralytics import YOLO
+from ultralytics.utils.plotting import Annotator
 import cv2
 import time
 import numpy as np
 from collections import defaultdict
 
-class rgb():
-    def __init__(self, r, g, b):
-        self.r = r
-        self.g = g
-        self.b = b
-    
-    def __str__(self):
-        return f"rgb({self.r}, {self.g}, {self.b})"
+from rgb import rgb, colors
 
-    def __repr__(self):
-        return f"rgb({self.r}, {self.g}, {self.b})"
-    
-    def as_bgr(self) -> tuple:
-        return (self.b, self.g, self.r)
-
-colors: dict[rgb] = {
-    "blue_ball": rgb(0, 0, 255),
-    "dock": rgb(109, 67, 3),
-    "green_ball": rgb(0, 255, 0),
-    "green_pole": rgb(0, 255, 0),
-    "misc_buoy": rgb(0, 217, 255),
-    "red_ball": rgb(255, 0, 0),
-    "red_pole": rgb(255, 0, 0),
-    "yellow_ball": rgb(255, 255, 0),
-}
-
-model = YOLO("runs/detect/v9/weights/best.pt")
+model = YOLO("./best.pt")
 
 track_history = defaultdict(lambda: [])
 
@@ -57,7 +33,6 @@ frame = cv2.resize(frame, FRAME_SIZE)
 x_scale_factor = frame.shape[1] / IN_SIZE[0]
 y_scale_factor = frame.shape[0] / IN_SIZE[1]
 x_orig, y_orig = frame.shape[1], frame.shape[0]
-
 
 while True:
     total_frames += 1
@@ -142,14 +117,21 @@ while True:
 
             print(f"{name} {int(confidence*100)}% {bounding_box}")
 
-            original_frame = cv2.putText(original_frame, 
-                                         f"{id if id is not None else 'None'}: {name} ({int(confidence*100)})% {int(area)}px",
-                                         (int(bounding_box[0]), int(bounding_box[1])-5),
-                                         cv2.FONT_HERSHEY_SIMPLEX, 0.4, color.as_bgr(), 1)
-            original_frame = cv2.rectangle(original_frame,
-                                           (int(bounding_box[0]), int(bounding_box[1])),
-                                           (int(bounding_box[2]), int(bounding_box[3])), 
-                                           color.as_bgr(), 1)
+            # original_frame = cv2.putText(original_frame, 
+            #                              f"{id if id is not None else 'None'}: {name} ({int(confidence*100)})% {int(area)}px",
+            #                              (int(bounding_box[0]), int(bounding_box[1])-5),
+            #                              cv2.FONT_HERSHEY_SIMPLEX, 0.4, color.as_bgr(), 1)
+            # original_frame = cv2.rectangle(original_frame,
+            #                                (int(bounding_box[0]), int(bounding_box[1])),
+            #                                (int(bounding_box[2]), int(bounding_box[3])), 
+            #                                color.as_bgr(), 1)
+
+            annotator = Annotator(original_frame, line_width=1)
+
+            annotator.box_label((x, y, x+w, y+h), f"{id if id is not None else 'None'}: {name} ({int(confidence*100)})% {int(area)}px",
+                                color=color.as_bgr(), txt_color=color.text_color().as_bgr())
+
+            original_frame = annotator.result()
 
     cv2.imshow("result", original_frame)
     c = cv2.waitKey(1)

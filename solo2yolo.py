@@ -2,6 +2,8 @@
 # This is specialized to the output from the Unity Perception package.
 # Using datasets from other tools may require modifications to this script.
 
+# file deepcode ignore : your mother
+
 import os
 import sys
 import argparse

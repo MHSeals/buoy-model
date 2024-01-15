@@ -7,7 +7,7 @@ rf = Roboflow(api_key=roboflow_api_key)
 
 project = rf.workspace("mhseals").project("buoys-4naae")
 
-dataset = project.version(9).download("yolov8")
+dataset = project.version(10).download("yolov8", overwrite=False)
 
 # class Dataset:
 #     def __init__(self, location, version):
@@ -17,7 +17,7 @@ dataset = project.version(9).download("yolov8")
 
 # dataset = Dataset(location="SYNTHETIC-YOLO", version=1)
 
-model = YOLO("yolov8s.pt")
+model = YOLO("./runs/detect/v9/weights/best.pt")
 
 results = model.train(
     data=f"{dataset.location}/data.yaml",
