@@ -31,7 +31,7 @@ while True:
     height, width, _ = frame.shape
     print(height, width)
 
-    angle = calculateAngleOfPixel(frame, (width/2, height/2))
+    angle = calculateAngleOfPixel(frame, (width//2, height//2))
     print(angle)
 
     cv2.imshow("Input", frame)

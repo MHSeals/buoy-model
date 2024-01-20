@@ -26,4 +26,5 @@ results = model.train(
     batch=8,
     name=f"v{dataset.version}",
     amp=True,
+    save_dir=f"./runs/detect/v{dataset.version}" # TODO: check if this works
 )

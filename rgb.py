@@ -25,7 +25,7 @@ class rgb():
             return rgb(0, 0, 0)
 
 
-colors: dict[rgb] = {
+colors: dict[str, rgb] = {
     "blue_buoy": rgb(33, 49, 255),
     "dock": rgb(132, 66, 0),
     "green_buoy": rgb(135, 255, 0),

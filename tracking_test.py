@@ -4,6 +4,7 @@ import cv2
 import time
 import numpy as np
 from collections import defaultdict
+import torch
 
 from rgb import rgb, colors
 
@@ -59,7 +60,7 @@ while True:
 
     fps_disp = "FPS: "+str(FPS)[:5]
 
-    results = model.track(frame, persist=True)
+    results = model.track(frame, persist=True, tracker="bytetrack.yaml")
 
     original_frame = cv2.putText(
         original_frame, fps_disp, (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
