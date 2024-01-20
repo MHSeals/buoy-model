@@ -12,7 +12,8 @@ model = YOLO("./best.pt")
 
 track_history = defaultdict(lambda: [])
 
-cap = cv2.VideoCapture("PXL_20240108_222954915.TS.mp4")  # can change to use different webcams
+# can change to use different webcams
+cap = cv2.VideoCapture("PXL_20240108_222954915.TS.mp4")
 
 if not cap.isOpened():
     raise IOError("Cannot open webcam")
@@ -63,13 +64,16 @@ while True:
     results = model.track(frame, persist=True, tracker="bytetrack.yaml")
 
     original_frame = cv2.putText(
-        original_frame, fps_disp, (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-    
-    original_frame = cv2.putText(original_frame, "Press k to pause", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+        original_frame, fps_disp, (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
 
-    original_frame = cv2.putText(original_frame, "Press ESC to exit", (10, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+    original_frame = cv2.putText(original_frame, "Press k to pause",
+                                 (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
 
-    original_frame = cv2.putText(original_frame, "Press r to restart", (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+    original_frame = cv2.putText(original_frame, "Press ESC to exit",
+                                 (10, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+
+    original_frame = cv2.putText(original_frame, "Press r to restart (video cap only)", (
+        10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
 
     for pred in results:
         names = pred.names
@@ -87,7 +91,8 @@ while True:
 
             # Calculate area of bounding box
 
-            area = (bounding_box[2] - bounding_box[0]) * (bounding_box[3] - bounding_box[1])
+            area = (bounding_box[2] - bounding_box[0]) * \
+                (bounding_box[3] - bounding_box[1])
 
             # Disregard large bounding boxes
 
@@ -114,17 +119,18 @@ while True:
 
                 # Draw the tracking lines
                 points = np.hstack(track).astype(np.int32).reshape((-1, 1, 2))
-                original_frame = cv2.polylines(original_frame, [points], isClosed=False, color=color.as_bgr(), thickness=2)
+                original_frame = cv2.polylines(
+                    original_frame, [points], isClosed=False, color=color.as_bgr(), thickness=2)
 
             print(f"{name} {int(confidence*100)}% {bounding_box}")
 
-            # original_frame = cv2.putText(original_frame, 
+            # original_frame = cv2.putText(original_frame,
             #                              f"{id if id is not None else 'None'}: {name} ({int(confidence*100)})% {int(area)}px",
             #                              (int(bounding_box[0]), int(bounding_box[1])-5),
             #                              cv2.FONT_HERSHEY_SIMPLEX, 0.4, color.as_bgr(), 1)
             # original_frame = cv2.rectangle(original_frame,
             #                                (int(bounding_box[0]), int(bounding_box[1])),
-            #                                (int(bounding_box[2]), int(bounding_box[3])), 
+            #                                (int(bounding_box[2]), int(bounding_box[3])),
             #                                color.as_bgr(), 1)
 
             annotator = Annotator(original_frame, line_width=1)
@@ -144,6 +150,11 @@ while True:
                 break
 
             if cv2.getWindowProperty("result", cv2.WND_PROP_VISIBLE) < 1:
+                break
+
+            if c == 114:
+                track_history.clear()
+                cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
                 break
 
     if c == 27:
