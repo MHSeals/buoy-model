@@ -8,7 +8,7 @@ import torch
 
 from rgb import rgb, colors
 
-model = YOLO("./best.pt")
+model = YOLO("best.pt")
 
 track_history = defaultdict(lambda: [])
 
