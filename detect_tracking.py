@@ -8,12 +8,49 @@ import torch
 
 from rgb import rgb, colors
 
-model = YOLO("best.pt")
+model = YOLO("/home/alec/.pyenv/runs/detect/v11/weights/best.pt")
 
 track_history = defaultdict(lambda: [])
 
-# can change to use different webcams
-cap = cv2.VideoCapture("PXL_20240108_222954915.TS.mp4")
+class RealsenseCapture:
+    def __init__(self):
+        import pyrealsense2 as rs
+
+        self.pipeline = rs.pipeline()
+        self.config = rs.config()
+        self.config.enable_stream(rs.stream.color, 1920, 1080, rs.format.bgr8, 30)
+
+        self.pipeline.start(self.config)
+
+        self._is_opened = True
+
+    def read(self):
+        frames = self.pipeline.wait_for_frames()
+        color_frame = frames.get_color_frame()
+        frame = np.asanyarray(color_frame.get_data())
+        return True, frame
+
+    def release(self):
+        self._is_opened = False
+        self.pipeline.stop()
+
+    def isOpened(self):
+        return self._is_opened
+
+USE_REALSENSE = True
+
+DISP_SIZE = (1280, 720)
+
+IN_SIZE = (1080, 1080)
+
+TARGET_FPS = None # 2.8798397863818423
+
+if USE_REALSENSE:
+    cap = RealsenseCapture()
+
+else:
+    # can change to use different webcams
+    cap = cv2.VideoCapture("video.mp4")
 
 if not cap.isOpened():
     raise IOError("Cannot open webcam")
@@ -26,17 +63,14 @@ FPS = 0
 total_frames = 0
 prog_start = time.perf_counter()
 
-FRAME_SIZE = (1280, 720)
-
-IN_SIZE = (1280, 1280)
-
 frame = cap.read()[1]
-frame = cv2.resize(frame, FRAME_SIZE)
+frame = cv2.resize(frame, DISP_SIZE)
 x_scale_factor = frame.shape[1] / IN_SIZE[0]
 y_scale_factor = frame.shape[0] / IN_SIZE[1]
 x_orig, y_orig = frame.shape[1], frame.shape[0]
 
 while True:
+    frame_start_time = time.perf_counter()
     total_frames += 1
     TIME = time.perf_counter() - start_time
     success, frame = cap.read()
@@ -45,9 +79,10 @@ while True:
         cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
         continue
 
-    frame = cv2.resize(frame, FRAME_SIZE)
+    frame = cv2.resize(frame, DISP_SIZE)
 
     original_frame = frame.copy()
+    
     frame = cv2.resize(frame, IN_SIZE)
 
     frame_area = frame.shape[0] * frame.shape[1]
@@ -139,6 +174,12 @@ while True:
                                 color=color.as_bgr(), txt_color=color.text_color().as_bgr())
 
             original_frame = annotator.result()
+
+    if TARGET_FPS is not None:
+        frame_end_time = time.perf_counter()
+        frame_time = frame_end_time - frame_start_time
+        delay_time = max(1./TARGET_FPS - frame_time, 0)
+        time.sleep(delay_time)
 
     cv2.imshow("result", original_frame)
     c = cv2.waitKey(1)

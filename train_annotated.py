@@ -1,5 +1,6 @@
 from ultralytics import YOLO
 from roboflow import Roboflow
+from datetime import datetime
 
 from secret import roboflow_api_key
 
@@ -7,7 +8,11 @@ rf = Roboflow(api_key=roboflow_api_key)
 
 project = rf.workspace("mhseals").project("buoys-4naae")
 
-dataset = project.version(10).download("yolov8", overwrite=False)
+version = project.version(11)
+
+print(f"Downloading version {version.version} of {project.name} created at {datetime.fromtimestamp(version.created)}")
+
+dataset = version.download("yolov8", overwrite=False)
 
 # class Dataset:
 #     def __init__(self, location, version):
@@ -17,7 +22,7 @@ dataset = project.version(10).download("yolov8", overwrite=False)
 
 # dataset = Dataset(location="SYNTHETIC-YOLO", version=1)
 
-model = YOLO("./runs/detect/v9/weights/best.pt")
+model = YOLO("/home/alec/.pyenv/runs/detect/v11/weights/last.pt")
 
 results = model.train(
     data=f"{dataset.location}/data.yaml",
@@ -26,5 +31,5 @@ results = model.train(
     batch=8,
     name=f"v{dataset.version}",
     amp=True,
-    save_dir=f"./runs/detect/v{dataset.version}" # TODO: check if this works
+    resume=True
 )
