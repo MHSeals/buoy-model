@@ -4,11 +4,11 @@ import cv2
 import time
 import numpy as np
 from collections import defaultdict
-import torch
 
 from rgb import rgb, colors
 
-model = YOLO("/home/alec/.pyenv/runs/detect/v11/weights/best.pt")
+model = YOLO("v13.pt")
+
 
 track_history = defaultdict(lambda: [])
 

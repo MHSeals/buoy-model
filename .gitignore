@@ -18,3 +18,4 @@ cameraCalibration
 testRes*.png
 *.pkl
 *.mp4
+nav_channel
