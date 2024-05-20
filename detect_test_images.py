@@ -5,9 +5,9 @@ import os
 
 from rgb import rgb, colors
 
-model = YOLO("./best.pt")
+model = YOLO("./v13.pt")
 
-dir = "./test_images"
+dir = "./Buoys-13/test/images"
 
 image_list = os.listdir(dir)
 

@@ -6,6 +6,7 @@ import numpy as np
 from collections import defaultdict
 
 from rgb import rgb, colors
+from image_preprocessing import preprocess
 
 model = YOLO("v13.pt")
 
@@ -37,20 +38,43 @@ class RealsenseCapture:
     def isOpened(self):
         return self._is_opened
 
-USE_REALSENSE = True
+# USE_REALSENSE = False
 
-DISP_SIZE = (1280, 720)
+# DISP_SIZE = (1280, 720)
 
-IN_SIZE = (1080, 1080)
+# IN_SIZE = (1080, 1080)
 
-TARGET_FPS = None # 2.8798397863818423
+# TARGET_FPS = 2.8798397863818423
 
-if USE_REALSENSE:
+# if USE_REALSENSE:
+#     cap = RealsenseCapture()
+
+# else:
+#     # can change to use different webcams
+#     cap = cv2.VideoCapture("video.mp4")
+
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-v", "--video", help="Path to video file")
+parser.add_argument("-vf", "--video_fps", type=float, help="FPS of video file", default=None)
+parser.add_argument("-r", "--realsense", action="store_true", help="Use realsense camera")
+parser.add_argument("-d", "--device", type=int, help="Device number of camera", default=0)
+parser.add_argument("-s", "--display_size", type=int, nargs=2, help="Display size", default=(1280, 720))
+parser.add_argument("-i", "--input_size", type=int, nargs=2, help="Input size", default=(1080, 1080))
+
+args = parser.parse_args()
+
+DISP_SIZE = tuple(args.display_size)
+IN_SIZE = tuple(args.input_size)
+TARGET_FPS = args.video_fps
+
+if args.video is not None:
+    cap = cv2.VideoCapture(args.video)
+elif args.realsense:
     cap = RealsenseCapture()
-
 else:
-    # can change to use different webcams
-    cap = cv2.VideoCapture("video.mp4")
+    cap = cv2.VideoCapture(args.device)
 
 if not cap.isOpened():
     raise IOError("Cannot open webcam")
@@ -95,6 +119,8 @@ while True:
         start_time = time.perf_counter()
 
     fps_disp = "FPS: "+str(FPS)[:5]
+
+    frame = preprocess(frame)
 
     results = model.track(frame, persist=True, tracker="bytetrack.yaml")
 
