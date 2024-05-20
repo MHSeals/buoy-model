@@ -8,6 +8,7 @@ from collections import defaultdict
 from rgb import rgb, colors
 from image_preprocessing import preprocess
 
+print("Loading model...")
 model = YOLO("v13.pt")
 
 
@@ -69,6 +70,7 @@ DISP_SIZE = tuple(args.display_size)
 IN_SIZE = tuple(args.input_size)
 TARGET_FPS = args.video_fps
 
+print("Getting video capture...")
 if args.video is not None:
     cap = cv2.VideoCapture(args.video)
 elif args.realsense:
@@ -93,6 +95,21 @@ x_scale_factor = frame.shape[1] / IN_SIZE[0]
 y_scale_factor = frame.shape[0] / IN_SIZE[1]
 x_orig, y_orig = frame.shape[1], frame.shape[0]
 
+# create overlay for on screen text
+
+print("Creating overlay...")
+overlay = np.zeros_like(frame)
+
+overlay = cv2.putText(overlay, "Press k to pause",
+                                 (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+
+overlay = cv2.putText(overlay, "Press ESC to exit",
+                                (10, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+
+overlay = cv2.putText(overlay, "Press r to restart (video cap only)", (
+    10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+
+print("Started")
 while True:
     frame_start_time = time.perf_counter()
     total_frames += 1
@@ -104,6 +121,8 @@ while True:
         continue
 
     frame = cv2.resize(frame, DISP_SIZE)
+
+    frame = preprocess(frame)
 
     original_frame = frame.copy()
     
@@ -127,17 +146,13 @@ while True:
     original_frame = cv2.putText(
         original_frame, fps_disp, (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
 
-    original_frame = cv2.putText(original_frame, "Press k to pause",
-                                 (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
-
-    original_frame = cv2.putText(original_frame, "Press ESC to exit",
-                                 (10, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
-
-    original_frame = cv2.putText(original_frame, "Press r to restart (video cap only)", (
-        10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+    original_frame = cv2.addWeighted(original_frame, 1, overlay, 0.5, 0)
 
     for pred in results:
         names = pred.names
+
+        # TODO: sometimes, on a frame with lots of objects, the model will only detect 1 object
+        # for some reason, it is always on the same frames
 
         for i in range(len(pred.boxes)):
             name = names.get(int(pred.boxes.cls[i]))
