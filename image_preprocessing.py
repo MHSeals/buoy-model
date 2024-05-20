@@ -1,24 +1,33 @@
 import cv2
 import numpy as np
+from numpy.linalg import norm
 import time
 
-def preprocess(image: np.ndarray) -> np.ndarray:
-    # dynamic range compression
-    image = cv2.convertScaleAbs(image, alpha=1.0, beta=50)
+simple_wb = cv2.xphoto.createSimpleWB()
 
-    # lower brightness
-    image = np.clip(image - 50, 0, 255)
+def preprocess(image: np.ndarray) -> np.ndarray:
+    # automatic color balance
+    image = simple_wb.balanceWhite(image)
+
+    image_brightness = np.average(norm(image, axis=2)) / np.sqrt(3)
+
+    beta = 160 - image_brightness
+
+    # constrast and brightness
+    image = cv2.convertScaleAbs(image, alpha=1.05, beta=beta)
+
+    hsv = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
 
     # increase saturation
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-    image = np.array(image, dtype=np.float64)
-    image[:, :, 1] = image[:, :, 1] * 1.4
-    image[:, :, 1] = np.clip(image[:, :, 1], 0, 255)
-    image = np.array(image, dtype=np.uint8)
-    image = cv2.cvtColor(image, cv2.COLOR_HSV2BGR)
+    hsv[...,1] = hsv[...,1] * 1.3
 
-    # increase contrast
-    image = cv2.convertScaleAbs(image, alpha=1.5, beta=0)
+    hsv[...,1] = np.clip(hsv[...,1],0,255)
+
+    image = cv2.cvtColor(hsv,cv2.COLOR_HSV2BGR)
+
+    # sharpen
+    blurred = cv2.GaussianBlur(image, (0, 0), 3)
+    image = cv2.addWeighted(image, 1.5, blurred, -0.5, 0)
 
     return image
 
