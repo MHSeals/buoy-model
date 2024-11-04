@@ -9,7 +9,7 @@ from rgb import rgb, colors
 from image_preprocessing import preprocess
 
 print("Loading model...")
-model = YOLO("v13.pt")
+model = YOLO("./runs/detect/v13/weights/best.pt")
 
 
 track_history = defaultdict(lambda: [])

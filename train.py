@@ -13,7 +13,7 @@ version = project.version(13)
 
 print(f"Downloading version {version.version} of {project.name} created at {datetime.fromtimestamp(version.created)}")
 
-dataset = version.download("yolov8", overwrite=False)
+dataset = version.download("yolov11", overwrite=False)
 
 class Dataset:
     def __init__(self, location, version):
@@ -23,7 +23,7 @@ class Dataset:
 
 # dataset = Dataset(location="SYNTHETIC-YOLO", version=1)
 
-model = YOLO("/home/alec/.pyenv/runs/detect/v13/weights/last.pt")
+model = YOLO("./runs/detect/v13/weights/last.pt")
 
 results = model.train(
     data=f"{dataset.location}/data.yaml",
@@ -32,5 +32,5 @@ results = model.train(
     batch=8,
     name=f"v{dataset.version}",
     amp=True,
-    resume=True
+    resume=True,
 )
