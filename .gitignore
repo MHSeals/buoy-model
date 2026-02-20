@@ -4,6 +4,7 @@ venv
 *.zip
 *.tar
 *.pt
+*.onnx
 pictures
 other_images
 runs

@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 
 # Load the model
-model = YOLO("runs/detect/v20/weights/best.pt")
+model = YOLO("best.pt")
 
 # Get class names and IDs
 class_names = model.names
