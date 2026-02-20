@@ -27,7 +27,7 @@ def preprocess(image: np.ndarray) -> np.ndarray:
     hsv = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
 
     # increase saturation
-    hsv[...,1] = hsv[...,1] * 1.1
+    hsv[...,1] = hsv[...,1] * 1.05
 
     hsv[...,1] = np.clip(hsv[...,1],0,255)
 
